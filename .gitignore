@@ -1,0 +1,20 @@
+# Python / Jupyter basics
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+kluenv/
+.env
+.venv
+
+
+# Large data files you DON'T want to push (optional - comment out if you DO want them)
+# *.mat
+
+# macOS / Windows junk
+.DS_Store
+Thumbs.db

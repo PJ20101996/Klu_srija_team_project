@@ -40,3 +40,8 @@ tornado==6.5.4
 traitlets==5.14.3
 typing_extensions==4.15.0
 wcwidth==0.5.3
+
+# API dependencies
+fastapi>=0.100.0
+uvicorn[standard]==0.23.1
+pydantic>=2.0.0

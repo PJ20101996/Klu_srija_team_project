@@ -1,0 +1,11 @@
+{
+  "dataset": "indian_pines",
+  "data_file": "Indian_pines_corrected.mat",
+  "gt_file": "Indian_pines_gt.mat",
+  "num_classes": 16,
+  "num_bands": 30,
+  "patch_size": 9,
+  "epochs": 10,
+  "batch_size": 64,
+  "seed": 42
+}

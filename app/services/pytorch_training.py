@@ -164,7 +164,16 @@ def predict_image(model: nn.Module, image_path: str, patch_size: int = 9, n_comp
     Returns the path to the saved .mat file containing `pred_map`.
     """
     mat = load_mat_file(image_path)
-    data, gt = find_data_and_gt(mat)
+    
+    # Extract 3D data (no need for GT in prediction)
+    data = None
+    for k, v in mat.items():
+        if not k.startswith("__") and isinstance(v, np.ndarray) and v.ndim == 3:
+            data = v
+            break
+    if data is None:
+        raise ValueError(f"No 3D data array found in {image_path}")
+    
     data_pre, _meta = preprocess_data(data, n_components=n_components)
 
     # generate full map (sliding window)

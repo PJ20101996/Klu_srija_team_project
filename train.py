@@ -1,6 +1,7 @@
 """Example script to train a satellite classification model."""
 import os
 import random
+import time
 import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
@@ -80,15 +81,15 @@ def main(data_file="Indian_pines_corrected.mat", gt_file="Indian_pines_gt.mat", 
     print(f"Train: {len(y_train)}, Val: {len(y_val)}, Test: {len(y_test)}")
 
     # 4. Create datasets and dataloaders
-    train_ds = HyperspectralPatchDataset(X_train, y_train)
-    val_ds = HyperspectralPatchDataset(X_val, y_val)
+    train_ds = HyperspectralPatchDataset(X_train, y_train, augment=True)
+    val_ds = HyperspectralPatchDataset(X_val, y_val, augment=False)
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
     # 5. Instantiate model
     num_classes = len(np.unique(labels))
     num_bands = data_pre.shape[2]
-    print(f"\nInstantiating model (SimpleCNN)...")
+    print(f"\nInstantiating model (Reduced2DCNN)...")
     model = get_model(
         model_type="simple",
         num_bands=num_bands,
@@ -99,10 +100,11 @@ def main(data_file="Indian_pines_corrected.mat", gt_file="Indian_pines_gt.mat", 
     print(f"Model has {num_params:,} trainable parameters")
 
     # 6. Train
-    print(f"\nTraining for {epochs} epochs...")
     model_name = os.path.splitext(data_file)[0].lower().replace("_corrected", "")
-    save_path = os.path.join("models", f"{model_name}_trained.pth")
-    trained_model, best_path = train_model(
+    save_path = f"models/{model_name}_trained.pth"
+    os.makedirs("models", exist_ok=True)
+    start_time = time.time()
+    trained_model, best_path, best_val = train_model(
         model,
         train_loader,
         val_loader=val_loader,
@@ -111,8 +113,33 @@ def main(data_file="Indian_pines_corrected.mat", gt_file="Indian_pines_gt.mat", 
         device=device,
         save_path=save_path,
     )
+    training_time = (time.time() - start_time) / 60  # in minutes
 
-    # 7. Save with metadata
+    # 7. Evaluate on test set
+    test_ds = HyperspectralPatchDataset(X_test, y_test)
+    test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
+    trained_model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for xb, yb in test_loader:
+            xb = xb.to(device)
+            yb = yb.to(device)
+            out = trained_model(xb)
+            preds = out.argmax(dim=1)
+            correct += (preds == yb).sum().item()
+            total += yb.size(0)
+    test_acc = correct / total if total > 0 else 0.0
+
+    print("\nResults:")
+    print(f"Overall Accuracy (Test): {test_acc:.4f}")
+    print(f"Training Time: {training_time:.2f} minutes")
+    print(f"Number of Parameters: {num_params:,}")
+    print(f"Final Validation Accuracy: {best_val:.4f}")
+
+    print(f"Model saved to: {best_path}")
+
+    # 8. Save with metadata
     if best_path:
         metadata = {
             "dataset": model_name,
@@ -124,6 +151,10 @@ def main(data_file="Indian_pines_corrected.mat", gt_file="Indian_pines_gt.mat", 
             "epochs": epochs,
             "batch_size": batch_size,
             "seed": seed,
+            "test_accuracy": test_acc,
+            "training_time_minutes": training_time,
+            "num_parameters": num_params,
+            "final_val_accuracy": best_val,
         }
         save_with_metadata(trained_model, best_path, metadata)
         print(f"\n✓ Model saved to {best_path}")
@@ -132,13 +163,39 @@ def main(data_file="Indian_pines_corrected.mat", gt_file="Indian_pines_gt.mat", 
 
 if __name__ == "__main__":
     # Train on Indian Pines
+    print("\n" + "="*80)
+    print("STARTING TRAINING ON ALL DATASETS")
+    print("="*80)
+    
     main(
         data_file="Indian_pines_corrected.mat",
         gt_file="Indian_pines_gt.mat",
         epochs=10,
         batch_size=64,
     )
-
-    # Uncomment to try other datasets:
-    # main(data_file="Salinas_corrected.mat", gt_file="Salinas_gt.mat", epochs=10, batch_size=64)
-    # main(data_file="PaviaU.mat", gt_file="PaviaU_gt.mat", epochs=10, batch_size=64)
+    
+    print("\n" + "="*80)
+    print("TRAINING ON PAVIA UNIVERSITY")
+    print("="*80)
+    
+    main(
+        data_file="PaviaU.mat",
+        gt_file="PaviaU_gt.mat",
+        epochs=10,
+        batch_size=64,
+    )
+    
+    print("\n" + "="*80)
+    print("TRAINING ON SALINAS")
+    print("="*80)
+    
+    main(
+        data_file="Salinas_corrected.mat",
+        gt_file="Salinas_gt.mat",
+        epochs=10,
+        batch_size=64,
+    )
+    
+    print("\n" + "="*80)
+    print("ALL TRAINING COMPLETED!")
+    print("="*80)

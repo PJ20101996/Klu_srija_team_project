@@ -1,0 +1,15 @@
+{
+  "dataset": "salinas",
+  "data_file": "Salinas_corrected.mat",
+  "gt_file": "Salinas_gt.mat",
+  "num_classes": 16,
+  "num_bands": 30,
+  "patch_size": 9,
+  "epochs": 10,
+  "batch_size": 64,
+  "seed": 42,
+  "test_accuracy": 0.9966748768472906,
+  "training_time_minutes": 3.0362079540888467,
+  "num_parameters": 115496,
+  "final_val_accuracy": 0.9996304963665475
+}

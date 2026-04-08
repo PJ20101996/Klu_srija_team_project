@@ -57,7 +57,7 @@ def preprocess_data(data: np.ndarray, n_components: int = 30) -> Tuple[np.ndarra
         data_pca = data_norm
         pca = None
     else:
-        pca = PCA(n_components=n_components)
+        pca = PCA(n_components=n_components, whiten=True)
         data_pca = pca.fit_transform(data_norm)
 
     if pca is not None:

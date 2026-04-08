@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load the predicted map from the API response
-pred_data = sio.loadmat('predictions/Indian_pines_corrected_pred_map.mat')
+pred_data = sio.loadmat(r'C:\Users\MIT\Klu_srija_team_project\predictions\PaviaU_pred_map.mat')
 pred_map = pred_data['pred_map']
 
 print(f'Predicted map shape: {pred_map.shape}')

@@ -1,0 +1,30 @@
+[
+  {
+    "n_bands": 10,
+    "training_time_mins": 1.7126570661862692,
+    "test_accuracy": 0.9967274427302478,
+    "val_accuracy": 0.0,
+    "num_params": 97353
+  },
+  {
+    "n_bands": 20,
+    "training_time_mins": 1.852994179725647,
+    "test_accuracy": 0.9973507869721053,
+    "val_accuracy": 0.0,
+    "num_params": 103113
+  },
+  {
+    "n_bands": 30,
+    "training_time_mins": 1.7524259408315024,
+    "test_accuracy": 0.9996883278790712,
+    "val_accuracy": 0.0,
+    "num_params": 108873
+  },
+  {
+    "n_bands": 50,
+    "training_time_mins": 1.9293206850687663,
+    "test_accuracy": 0.9992208196976781,
+    "val_accuracy": 0.0,
+    "num_params": 120393
+  }
+]

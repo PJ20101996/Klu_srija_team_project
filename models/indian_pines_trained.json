@@ -7,5 +7,9 @@
   "patch_size": 9,
   "epochs": 10,
   "batch_size": 64,
-  "seed": 42
+  "seed": 42,
+  "test_accuracy": 0.9954486345903771,
+  "training_time_minutes": 0.47468775510787964,
+  "num_parameters": 115496,
+  "final_val_accuracy": 0.9973975276512687
 }
